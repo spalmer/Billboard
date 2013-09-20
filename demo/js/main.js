@@ -20,14 +20,14 @@ $(document).ready(function() {
 			transition:		"right", 
 			duration:			2000, 
 			speed: 				500, 
-			nav:					"controls" 
+			navType:			"controls" 
 		});
 		
 	upBillboard = new $.billboard(
 		".billboard.up", 
 		{ 
 			transition:		"up", 
-			nav:					"none" 
+			navType:			"none" 
 		});
 		
 	downBillboard	= new $.billboard(
@@ -42,7 +42,7 @@ $(document).ready(function() {
 		".billboard.fade", 
 		{ 
 			transition:		"fade", 
-			footer:				false 
+			includeFooter:false 
 		});
 		
 	gotoBillboard 		= new $.billboard(
