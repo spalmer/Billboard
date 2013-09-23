@@ -9,6 +9,15 @@
  *
  */
  
+// TO DO
+/*
+
+	- handle vertical images that are alone in slides
+	- figure out why all slideshows other than first two are hidden
+
+
+*/
+ 
 ;(function($) {
 
 	$.billboard = function(el, options) {
@@ -40,7 +49,8 @@
 			onClickPrev: 			function(){},
 			onClickPause: 		function(){},
 			onClickPlay: 			function(){},
-			onInit:						function(){}
+			onInit:						function(){},
+			onStart:					function(){}
 		};
 
 		var plugin = this;
@@ -48,7 +58,9 @@
 
 		// variables
 		var 
-			numSlides 	= $("> ul > li", wrapper).size(),
+			slides			= $( "> ul > li", wrapper ),
+			numSlides 	= slides.length,
+			numLoaded		= 0,
 			firstRun 		= true,
 			curSlide 		= 0,
 			prevSlide 	= 0,
@@ -86,28 +98,70 @@
 			plugin.el = el;
 	
 			// single slide
-			if(numSlides <= 1) 
+			if( numSlides <= 1 ) 
 			{
-				wrapper.addClass("billboard-activated billboard-single");
+				wrapper
+					.addClass("billboard-activated billboard-single");
 				_setSize();
 				return;
 			}
 			
-			_buildInterface();
-			plugin.settings.onInit.apply(wrapper, arguments);
-			
 			wrapper
-				.addClass("billboard-activated");
-			if( plugin.settings.autosize ) {
-				wrapper.addClass("billboard-autosize");
-			}					
-			plugin.ready = true;
-			
-			// load first slide
-			_play();
-			
-		}
+				.on("slideLoaded", function(e, $slide) {
+					numLoaded++;
+					
+					if( plugin.settings.resize ) 
+					{
+						if( numLoaded == numSlides )
+						{
+							// start
+							wrapper
+								.trigger("allSlidesLoaded");
+						}
+					}
+					else 
+					{
+						if( numLoaded )
+						{
+							// start
+							wrapper
+								.trigger("allSlidesLoaded");
+						}
+					}
+					
+				})
+				.on("allSlidesLoaded", function() {
+					
+					var
+						firstSlide = $( "> ul > li:first", wrapper );						
+				
+					if( ! plugin.settings.resize )
+					{
+						wrapper
+							.width( firstSlide.data("slideWidth") )
+							.height( firstSlide.data("slideHeight") );
+					}
+				
+					_start();		
 
+				});			
+			
+			// start it up
+			_buildInterface();
+			
+			// init callback
+			plugin
+				.settings
+				.onInit
+				.apply(wrapper, arguments);
+				
+			if( plugin.settings.autosize )
+			{
+				_start();
+			}	
+				
+		}
+		
 		/*************************************
 		 * Public methods
 		 */
@@ -144,10 +198,32 @@
 		/*************************************
 		 * Private methods
 		 */
+		 
+		// start
+		var _start = function() {
+
+			plugin
+				.ready = true;
+					
+			wrapper
+				.addClass("billboard-activated " + ( plugin.settings.autosize ? "billboard-autosize" : "billboard-fixedsize"));
+
+			// load first slide
+			_play();				
+
+			// init callback
+			plugin
+				.settings
+				.onStart
+				.apply(wrapper, arguments);
+		} 
 
   	// build interface
 		var _buildInterface = function() 
 		{
+			var
+				firstSlide = $( "> ul > li:first", wrapper );
+				
 			// style nav
 			if(plugin.settings.styleNav) 
 			{
@@ -158,35 +234,37 @@
 			_setSize();
 			
 			// init first slide position
-			if(plugin.settings.transition == "left")
+			switch( plugin.settings.transition )
 			{
-				$("> ul > li:first", wrapper)
-					.css("left", wrapper.width()+"px");
-			}
-			if(plugin.settings.transition == "right") 
-			{
-				$("> ul > li:first", wrapper)
-					.css("left", -wrapper.width()+"px");
-			}
-			if(plugin.settings.transition == "up") 
-			{
-				$("> ul > li:first", wrapper)
-					.css("top", -wrapper.height()+"px");
-			}
-			if(plugin.settings.transition == "down") 
-			{
-				$("> ul > li:first", wrapper)
-					.css("top", wrapper.height()+"px");
+				case "left":
+					firstSlide
+						.css( "left", "100%" );
+					break;
+				case "right":
+					firstSlide
+						.css( "left", "-100%" );
+					break;
+				case "up":
+					firstSlide
+						.css( "top", "-100%" );
+					break;
+				case "down":
+					firstSlide
+						.css( "top", "100%" );
+					break;
 			}
 				
 			// add footer, caption and nav
-			if(plugin.settings.includeFooter) {
+			if( plugin.settings.includeFooter ) 
+			{
 				footer
 					.appendTo(wrapper);
 				caption
 					.appendTo(footer);
+				
 				// build nav
-				switch(plugin.settings.navType) {	
+				switch( plugin.settings.navType ) 
+				{	
 					case "controls":
 						_addNavControls();
 						break;
@@ -207,7 +285,7 @@
 			$("> ul > li", wrapper)
 				.hide();
 
-			// button behaviours
+			// pause button behaviours
 			$(nav_pause)
 				.click(function(e) 
 				{
@@ -230,6 +308,8 @@
 						plugin.settings.onClickPause.apply(wrapper, [curSlide, prevSlide, arguments]);
 					}
 				});
+			
+			// next button behaviours	
 			$(nav_next)
 				.click(function(e) 
 				{
@@ -239,6 +319,8 @@
 					_playNextSlide();
 					plugin.settings.onClickPrev.apply(wrapper, [curSlide, prevSlide, arguments]);
 				});
+				
+			// prev button behaviours	
 			$(nav_prev)
 				.click(function(e) 
 				{
@@ -254,6 +336,25 @@
 		// set width/height to first slide dimensions
 		var _setSize = function() 
 		{
+			var
+				firstSlide = slides.eq(0);
+
+			if( plugin.settings.autosize ) 
+			{
+				if( plugin.settings.resize ) 
+				{
+					slides
+						.each(function() {
+							_getSlideSize( $(this) );
+						});
+				}
+				else 
+				{
+					_getSlideSize( firstSlide );
+				}
+			}
+					
+/*		
 			if( ! firstRun) loadDelay = 0;
 			firstRun = false;
 			
@@ -281,6 +382,47 @@
 				}, loadDelay);
 			
 			}
+			
+*/			
+		}
+		
+		var _getSlideSize = function( $slide )
+		{
+			var
+				images = $("img", $slide),
+				numImages = images.length;
+			
+			$slide
+				.data("imagesLoaded", 0);
+			
+			if( numImages > 0 )
+			{
+				images
+					.one("load", function() {
+						$slide
+							.data("imagesLoaded", $slide.data("imagesLoaded") + 1);
+						if( $slide.data("imagesLoaded") == numImages )
+						{
+							$slide
+								.data("slideWidth", $slide.outerWidth())
+								.data("slideHeight", $slide.outerHeight());
+							wrapper
+								.trigger("slideLoaded", [ $slide ]);
+						}						
+					})
+					.each(function() {
+					  if(this.complete) $(this).load();
+					});					
+			}
+			else 
+			{
+				$slide
+					.data("slideWidth", $slide.outerWidth())
+					.data("slideHeight", $slide.outerHeight());
+				wrapper
+					.trigger("slideLoaded", [ $slide ]);
+			}	
+				
 		}
 		
 		var _addNavControls = function() 
@@ -434,8 +576,24 @@
 					( curSlide == prevSlide && curSlide == 0 ) 
 				);
 			}
-			plugin.settings.onSlideChange.apply(wrapper, [curSlide, prevSlide, reverse, arguments]);				
-			$( "> ul > li", wrapper )
+			
+			// slide change callback
+			plugin
+				.settings
+				.onSlideChange
+				.apply(wrapper, [curSlide, prevSlide, reverse, arguments]);				
+
+			if( plugin.settings.resize ) 
+			{
+				wrapper
+					.animate(
+						{ width: slides.eq(curSlide).data("slideWidth"), height: slides.eq(curSlide).data("slideHeight") },
+						{ duration: plugin.settings.speed }
+					);
+			}
+			
+			// animate slides
+			slides
 				.each(function(i) { 
 					// set caption
 					if( i == curSlide && plugin.settings.includeFooter ) 

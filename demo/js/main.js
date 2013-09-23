@@ -20,7 +20,7 @@ $(document).ready(function() {
 			transition:		"right", 
 			duration:			2000, 
 			speed: 				500, 
-			navType:			"controls" 
+			navType:			"controls"	
 		});
 		
 	upBillboard = new $.billboard(
