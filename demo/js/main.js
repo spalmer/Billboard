@@ -42,7 +42,8 @@ $(document).ready(function() {
 		".billboard.fade", 
 		{ 
 			transition:		"fade", 
-			includeFooter:false 
+			includeFooter: false,
+			resize:				 true 
 		});
 		
 	gotoBillboard 		= new $.billboard(
@@ -55,7 +56,7 @@ $(document).ready(function() {
 			e.preventDefault();
 			
 			gotoBillboard
-				.goto( $("nav a").index(this) );
+				.goto( $("nav.goto a").index(this) );
 		
 		});
 		

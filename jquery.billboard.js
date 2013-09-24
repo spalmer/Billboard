@@ -11,11 +11,7 @@
  
 // TO DO
 /*
-
-	- handle vertical images that are alone in slides
-	- figure out why all slideshows other than first two are hidden
-
-
+- have swiping factor in transition direction
 */
  
 ;(function($) {
@@ -30,7 +26,7 @@
 			
 		// default options
 		var defaults = {
-			ease: 						"easeInOutExpo",	// animation ease of transitions
+			easing: 					"easeInOutExpo",	// animation ease of transitions
 			speed: 						1000,			// duration of transitions in milliseconds
 			duration: 				5000,			// time between slide changes
 			autoplay: 				true,			// whether slideshow should play automatically
@@ -79,7 +75,8 @@
 			footer 					= $('<footer class="billboard-footer"></footer>'),
 			caption 				= $('<p class="billboard-caption"></p>'),
 			listNav 				= $('<nav class="list"></nav>'),
-			controlsNav 		= $('<nav class="controls"></nav>');
+			controlsNav 		= $('<nav class="controls"></nav>'),
+			ratioDiv				= $('<div class="aspect-ratio" />');
 
 		// control elements
 		var 
@@ -137,14 +134,19 @@
 				
 					if( ! plugin.settings.resize )
 					{
-						wrapper
-							.width( firstSlide.data("slideWidth") )
-							.height( firstSlide.data("slideHeight") );
+						ratioDiv
+							.css( { paddingTop: ( 1 / slides.eq(curSlide).data("aspectRatio") * 100 ) + "%" } );
 					}
 				
 					_start();		
 
-				});			
+				})
+				.on("swipeleft", function() {
+					_playNextSlide();
+				})
+				.on("swiperight", function() {
+					_playPrevSlide();
+				});
 			
 			// start it up
 			_buildInterface();
@@ -155,7 +157,7 @@
 				.onInit
 				.apply(wrapper, arguments);
 				
-			if( plugin.settings.autosize )
+			if( ! plugin.settings.autosize )
 			{
 				_start();
 			}	
@@ -201,59 +203,13 @@
 		 
 		// start
 		var _start = function() {
-
+		
 			plugin
 				.ready = true;
 					
 			wrapper
 				.addClass("billboard-activated " + ( plugin.settings.autosize ? "billboard-autosize" : "billboard-fixedsize"));
 
-			// load first slide
-			_play();				
-
-			// init callback
-			plugin
-				.settings
-				.onStart
-				.apply(wrapper, arguments);
-		} 
-
-  	// build interface
-		var _buildInterface = function() 
-		{
-			var
-				firstSlide = $( "> ul > li:first", wrapper );
-				
-			// style nav
-			if(plugin.settings.styleNav) 
-			{
-				$(listNav).addClass("billboard-styled");
-				$(controlsNav).addClass("billboard-styled");
-			}
-			
-			_setSize();
-			
-			// init first slide position
-			switch( plugin.settings.transition )
-			{
-				case "left":
-					firstSlide
-						.css( "left", "100%" );
-					break;
-				case "right":
-					firstSlide
-						.css( "left", "-100%" );
-					break;
-				case "up":
-					firstSlide
-						.css( "top", "-100%" );
-					break;
-				case "down":
-					firstSlide
-						.css( "top", "100%" );
-					break;
-			}
-				
 			// add footer, caption and nav
 			if( plugin.settings.includeFooter ) 
 			{
@@ -280,11 +236,65 @@
 						break;
 				}	
 			}
+
+			// load first slide
+			_play();				
+
+			// init callback
+			plugin
+				.settings
+				.onStart
+				.apply(wrapper, arguments);
+		} 
+
+  	// build interface
+		var _buildInterface = function() 
+		{
+			var
+				firstSlide = $( "> ul > li:first", wrapper );
+				
+			// style nav
+			if(plugin.settings.styleNav) 
+			{
+				$(listNav)
+					.addClass("billboard-styled");
+				$(controlsNav)
+					.addClass("billboard-styled");
+			}
+			
+			_setSize();
+			
+			// init first slide position
+			switch( plugin.settings.transition )
+			{
+				case "left":
+					firstSlide
+						.css( "left", "100%" );
+					break;
+				case "right":
+					firstSlide
+						.css( "left", "-100%" );
+					break;
+				case "up":
+					firstSlide
+						.css( "top", "-100%" );
+					break;
+				case "down":
+					firstSlide
+						.css( "top", "100%" );
+					break;
+			}
+				
+			// aspect ratio
+			ratioDiv
+				.appendTo(wrapper);
 				
 			// hide all slides
+			/*
 			$("> ul > li", wrapper)
 				.hide();
-
+			*/
+			
 			// pause button behaviours
 			$(nav_pause)
 				.click(function(e) 
@@ -345,12 +355,12 @@
 				{
 					slides
 						.each(function() {
-							_getSlideSize( $(this) );
+							_calculateSlideSize( $(this) );
 						});
 				}
 				else 
 				{
-					_getSlideSize( firstSlide );
+					_calculateSlideSize( firstSlide );
 				}
 			}
 					
@@ -386,7 +396,7 @@
 */			
 		}
 		
-		var _getSlideSize = function( $slide )
+		var _calculateSlideSize = function( $slide )
 		{
 			var
 				images = $("img", $slide),
@@ -403,26 +413,45 @@
 							.data("imagesLoaded", $slide.data("imagesLoaded") + 1);
 						if( $slide.data("imagesLoaded") == numImages )
 						{
-							$slide
-								.data("slideWidth", $slide.outerWidth())
-								.data("slideHeight", $slide.outerHeight());
-							wrapper
-								.trigger("slideLoaded", [ $slide ]);
+							_getSlideSize( $slide );
 						}						
 					})
 					.each(function() {
-					  if(this.complete) $(this).load();
+					  if( this.complete ) 
+					  {
+					  	$(this)
+					  		.load();
+					  }
 					});					
 			}
 			else 
 			{
-				$slide
-					.data("slideWidth", $slide.outerWidth())
-					.data("slideHeight", $slide.outerHeight());
-				wrapper
-					.trigger("slideLoaded", [ $slide ]);
+				_getSlideSize( $slide );
 			}	
 				
+		}
+		
+		var _getSlideSize = function( $slide )
+		{
+			var
+				clone,
+				aspectRatio;
+				
+			clone = $slide.clone();
+			clone
+				.appendTo("body")
+				.css({ visibility: "hidden", position: "absolute" })
+				.each(function() {
+					aspectRatio = $(this).width() / $(this).height();			
+				})
+				.remove();
+			
+			$slide
+				.data("aspectRatio", aspectRatio)
+				.data("slideWidth", $slide.outerWidth())
+				.data("slideHeight", $slide.outerHeight());
+			wrapper
+				.trigger("slideLoaded", [ $slide ]);		
 		}
 		
 		var _addNavControls = function() 
@@ -507,11 +536,11 @@
 		var _gotoSlide = function( $index )
 		{
 			_reset();
-			if( $index >= 0 && index < numSlides && $index != curSlide ) 
+			if( $index >= 0 && $index < numSlides && $index != curSlide ) 
 			{
-				if( plugin.settings.navType != "list" ) reverse = index < curSlide;
+				if( plugin.settings.navType != "list" ) reverse = $index < curSlide;
 				prevSlide = curSlide;
-				curSlide = index;
+				curSlide = $index;
 				_play();
 			}
 		}
@@ -566,7 +595,10 @@
 		// go to curSlide
 		var _play = function() 
 		{
-			if(plugin.settings.autosize && plugin.settings.resize) _setSize();
+			var
+				slideAspectRatio,
+				wrapperAspectRatio;
+		
 			// determine animation direction
 			if( plugin.settings.navType == "list" ) 
 			{
@@ -585,29 +617,54 @@
 
 			if( plugin.settings.resize ) 
 			{
+				/*
 				wrapper
 					.animate(
 						{ width: slides.eq(curSlide).data("slideWidth"), height: slides.eq(curSlide).data("slideHeight") },
 						{ duration: plugin.settings.speed }
 					);
+				*/
+				ratioDiv
+					.animate(
+						{ paddingTop: ( 1 / slides.eq(curSlide).data("aspectRatio") * 100 ) + "%" },
+						{ 
+							duration: plugin.settings.speed,
+							easing: plugin.settings.easing
+						}
+					);
+			}
+			else if ( slides.eq(curSlide).data("aspectRatio") )
+			{
+				wrapperAspectRatio = wrapper.width() / wrapper.height();
+				slideAspectRatio = slides.eq(curSlide).data("aspectRatio");
+				
+				wrapper
+					.removeClass("billboard-portrait billboard-landscape")
+					.addClass( wrapperAspectRatio > slideAspectRatio ? "billboard-portrait" : "billboard-landscape" );
+				
 			}
 			
 			// animate slides
 			slides
-				.each(function(i) { 
+				.each(function(thisSlide) { 
 					// set caption
-					if( i == curSlide && plugin.settings.includeFooter ) 
+					if( thisSlide == curSlide && plugin.settings.includeFooter ) 
 					{
 						title = $(this).attr("title");
 						$(".billboard-caption", wrapper)
 							.fadeOut(plugin.settings.speed * 0.5, function(){
-								if(title) $(this).text(title).fadeIn(plugin.settings.speed * 0.5);
+								if(title) 
+								{
+									$(this)
+										.text(title)
+										.fadeIn(plugin.settings.speed * 0.5);
+								}
 							});
 					} 
 					// advance slide
 					switch( plugin.settings.transition ) {
 						case "fade":
-							if( i == curSlide ) {
+							if( thisSlide == curSlide ) {
 								$(this)
 									.animate(
 										{ opacity: "show" },
@@ -624,9 +681,9 @@
 							break;
 						case "left":
 						case "right":
-							if( i == curSlide || i == prevSlide ) {
-								x_start = ( i == curSlide ) ? 100 * (reverse ? -1 : 1) : 0;
-								x_end = ( i == curSlide ) ? 0 : -100 * (reverse ? -1 : 1);
+							if( thisSlide == curSlide || thisSlide == prevSlide ) {
+								x_start = ( thisSlide == curSlide ) ? 100 * (reverse ? -1 : 1) : 0;
+								x_end = ( thisSlide == curSlide ) ? 0 : -100 * (reverse ? -1 : 1);
 								if(plugin.settings.transition == "right") {
 									x_start *= -1;
 									x_end *= -1;
@@ -634,13 +691,13 @@
 								$(this)
 									.css("left", x_start + "%");
 								$(this)
-									.css("z-index", (i == curSlide ? numSlides+100 : 1));
+									.css("z-index", ( thisSlide == curSlide ? numSlides + 100 : 1 ));
 								$(this)
 									.animate(
 										{ "left": x_end + "%" }, 
 										{
 											duration: plugin.settings.speed,
-											easing: plugin.settings.ease,
+											easing: plugin.settings.easing,
 											queue: false
 										}
 									);
@@ -654,9 +711,9 @@
 							break;
 						case "up":
 						case "down":
-							if( i == curSlide || i == prevSlide ) {
-								y_start = (i == curSlide) ? 100 * (reverse ? -1 : 1) : 0;
-								y_end = (i == curSlide) ? 0 : -100 * (reverse ? -1 : 1);
+							if( thisSlide == curSlide || thisSlide == prevSlide ) {
+								y_start = (thisSlide == curSlide) ? 100 * (reverse ? -1 : 1) : 0;
+								y_end = (thisSlide == curSlide) ? 0 : -100 * (reverse ? -1 : 1);
 								if(plugin.settings.transition == "down") {
 									y_start *= -1;
 									y_end *= -1;
@@ -664,13 +721,13 @@
 								$(this)
 									.css("top", y_start + "%");
 								$(this)
-									.css("z-index", (i == curSlide ? numSlides+100 : 1));
+									.css("z-index", (thisSlide == curSlide ? numSlides+100 : 1));
 								$(this)
 									.animate(
 										{ "top": y_end + "%" }, 
 										{
 											duration: plugin.settings.speed,
-											easing: plugin.settings.ease,
+											easing: plugin.settings.easing,
 											queue: false
 										}
 									);
@@ -686,13 +743,13 @@
 				// set current item in list nav
 				if( plugin.settings.includeFooter ) 
 				{
-					if( i == curSlide ) 
+					if( thisSlide == curSlide ) 
 					{
-						$("a[rel=" + i + "]", listNav)
+						$("a[rel=" + thisSlide + "]", listNav)
 							.addClass("active");
 					} else 
 					{
-						$("a[rel=" + i + "]", listNav)
+						$("a[rel=" + thisSlide + "]", listNav)
 							.removeClass("active");			
 					}
 				}

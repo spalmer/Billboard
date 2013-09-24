@@ -24,17 +24,16 @@ var myBillboard = new $.billboard(
 "#myBillboard",
 { 
  ease: "easeInOutExpo",		// animation ease of transitions
- width: 0,
- height: 0,
  speed: 1000,			// duration of transitions in milliseconds
  duration: 5000,		// time between slide changes
  autoplay: true,		// whether slideshow should play automatically
  loop: true,			// whether slideshow should loop (only applies if autoplay is true)
  transition: "left", 		// "fade", "up", "down", "left", "right"
- nav: "list", 			// "controls", "list", "both" or "none"
- style_nav: true,		// applies default styles to nav
- footer: true,			// show/hide footer (contains caption and nav)
- detect_size: false		// attempts to detect slideshow size automatically	
+ navType: "list", 		// "controls", "list", "both" or "none"
+ styleNav: true,		// applies default styles to nav
+ includeFooter: true,		// show/hide footer (contains caption and nav)
+ autosize: true,		// attempts to detect slideshow size automatically	
+ resize: false			// attempts to detect each slide's size automatically	
 });</pre>
 
 		<h2>The markup</h2>
@@ -58,7 +57,7 @@ var myBillboard = new $.billboard(
 				<ul>
 					<li title="Title of first slide"><a href="#1"><img src="http://lorempixel.com/600/400/sports" /></a></li>
 					<li title="Title of second slide"><a href="#2"><img src="images/photo2.jpg" /></a></li>
-					<li title="Title of third slide"><a href="#3"><img src="images/photo3.jpg" /></a></li>
+					<li title="Title of third slide"><a href="#3"><img src="http://lorempixel.com/600/150/sports" /></a></li>
 					<li title="Title of fourth slide"><a href="#4"><img src="images/photo4.jpg" /></a></li>
 				</ul>
 			</div>
@@ -68,7 +67,7 @@ var myBillboard = new $.billboard(
 	transition: "right", 
 	duration: 2000,
 	speed: 500,
-	nav: "controls"
+	navType: "controls"
 });</pre>
 
 		<section style="width: 50%;">
@@ -84,7 +83,7 @@ var myBillboard = new $.billboard(
 		
 <pre class="prettyprint lang-js">$(".billboard.up").billboard({ 
 	transition: "up", 
-	nav: "none"
+	navType: "none"
 });</pre>
 
 		<div class="billboard up">
@@ -113,13 +112,14 @@ var myBillboard = new $.billboard(
 
 <pre class="prettyprint lang-js">$(".billboard.fade").billboard({ 
 	transition: "fade",
-	footer: false
+	includeFooter: false,
+	resize: true
 });</pre>
 
 		<div class="billboard fade">
 			<ul>
 				<li title="Title of first slide"><a href="#1"><img src="images/photo1.jpg" /></a></li>
-				<li title="Title of second slide"><a href="#2"><img src="images/photo2.jpg" /></a></li>
+				<li title="Title of second slide"><a href="#2"><img src="http://lorempixel.com/200/400/sports" /></a></li>
 				<li><a href="#3"><img src="images/photo3.jpg" /></a></li>
 				<li><a href="#4"><img src="images/photo4.jpg" /></a></li>
 			</ul>
@@ -128,7 +128,7 @@ var myBillboard = new $.billboard(
 <pre class="prettyprint lang-js">$(".billboard.goto").billboard();
 $("nav.goto a").click(function(e) {
 	e.preventDefault();
-	$.fn.billboard.goto($("nav a").index(this));
+	$.fn.billboard.goto($("nav.goto a").index(this));
 });</pre>
 
 		<div class="billboard goto">
