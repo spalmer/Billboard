@@ -1,0 +1,156 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Billboard by spalmer</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Billboard</h1>
+        <p>jQuery slideshow plugin</p>
+
+        <p class="view"><a href="https://github.com/spalmer/Billboard">View the Project on GitHub <small>spalmer/Billboard</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/spalmer/Billboard/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/spalmer/Billboard/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/spalmer/Billboard">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a name="billboard" class="anchor" href="#billboard"><span class="octicon octicon-link"></span></a>Billboard</h1>
+
+<p>A simple, robust jQuery plugin to create responsive slideshows.</p>
+
+<h2>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>Include the JS file <em>after</em> the jQuery library:</p>
+
+<pre><code>&lt;script src="/path/to/jquery.billboard.min.js"&gt;&lt;/script&gt;
+</code></pre>
+
+<p>Include the stylesheet in the <code>head</code> section of the document:</p>
+
+<pre><code>&lt;link rel="stylesheet" href="/path/to/jquery.billboard.css"&gt;
+</code></pre>
+
+<h2>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<p>The basic syntax is this:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">$</span><span class="p">(</span><span class="s2">"#myBillboard"</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">billboard</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span>
+</pre></div>
+
+<p>The selector can be any jQuery selector and the default options are:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">defaults</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">easing</span><span class="o">:</span> <span class="s2">"easeInOutExpo"</span><span class="p">,</span> <span class="c1">// animation ease of transitions</span>
+    <span class="nx">speed</span><span class="o">:</span> <span class="mi">1000</span><span class="p">,</span> <span class="c1">// duration of transitions in milliseconds</span>
+    <span class="nx">duration</span><span class="o">:</span> <span class="mi">5000</span><span class="p">,</span> <span class="c1">// time between slide changes</span>
+    <span class="nx">autoplay</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span> <span class="c1">// whether slideshow should play automatically</span>
+    <span class="nx">loop</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span> <span class="c1">// whether slideshow should loop (only applies if autoplay is true)</span>
+    <span class="nx">transition</span><span class="o">:</span> <span class="s2">"left"</span><span class="p">,</span> <span class="c1">// "fade", "up", "down", "left", "right"</span>
+    <span class="nx">navType</span><span class="o">:</span> <span class="s2">"list"</span><span class="p">,</span> <span class="c1">// "controls", "list", "both" or "none"</span>
+
+    <span class="nx">styleNav</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span> <span class="c1">// applies default styles to nav</span>
+    <span class="nx">includeFooter</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span> <span class="c1">// show/hide footer (contains caption and nav)</span>
+    <span class="nx">autosize</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span> <span class="c1">// attempts to detect slideshow size automatically</span>
+    <span class="nx">resize</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span> <span class="c1">// resize container based on each slide's width/height (used with autosize:true)     </span>
+
+    <span class="nx">onSlideChange</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){},</span>
+    <span class="nx">onClickDotNav</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){},</span>
+    <span class="nx">onClickNext</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){},</span>
+    <span class="nx">onClickPrev</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){},</span>
+    <span class="nx">onClickPause</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){},</span>
+    <span class="nx">onClickPlay</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){},</span>
+    <span class="nx">onInit</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){},</span>
+    <span class="nx">onStart</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){}</span>
+<span class="p">};</span>
+</pre></div>
+
+<h2>
+<a name="methods" class="anchor" href="#methods"><span class="octicon octicon-link"></span></a>Methods</h2>
+
+<p>Methods are accessed in one of two ways:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">$</span><span class="p">(</span><span class="s2">"#myBillboard"</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">billboard</span><span class="p">(</span><span class="s2">"method"</span><span class="p">,</span> <span class="p">[</span><span class="nx">arg1</span><span class="p">,</span> <span class="nx">arg2</span><span class="p">,</span> <span class="nx">arg3</span><span class="p">]);</span>
+</pre></div>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">$</span><span class="p">(</span><span class="s2">"#myBillboard"</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">billboard</span><span class="p">()</span>
+    <span class="p">.</span><span class="nx">method</span><span class="p">([</span><span class="nx">arg1</span><span class="p">,</span> <span class="nx">arg2</span><span class="p">,</span> <span class="nx">arg3</span><span class="p">]);</span>
+</pre></div>
+
+<p>The available methods are:</p>
+
+<ul>
+<li><code>play()</code></li>
+<li><code>pause()</code></li>
+<li><code>resume()</code></li>
+<li>
+<code>goto(n)</code> where "n" is the 0-based index of the slide</li>
+<li>
+<code>get(n)</code> returns the slide at index "n"</li>
+<li><code>sleep</code></li>
+<li><code>wake</code></li>
+</ul><h2>
+<a name="callbacks" class="anchor" href="#callbacks"><span class="octicon octicon-link"></span></a>Callbacks</h2>
+
+<p>Callbacks are defined in the options when the billboard is created:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">$</span><span class="p">(</span><span class="s2">"#myBillboard"</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">billboard</span><span class="p">({</span>
+        <span class="nx">onSlideChange</span><span class="o">:</span> <span class="nx">slideChangeHandler</span>
+    <span class="p">});</span>
+
+<span class="kd">function</span> <span class="nx">slideChangeHandler</span><span class="p">(</span> <span class="nx">curSlide</span><span class="p">,</span> <span class="nx">prevSlide</span><span class="p">,</span> <span class="nx">reverse</span><span class="p">,</span> <span class="nx">args</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="cm">/*</span>
+<span class="cm">    curSlide: index of the slide being switched to</span>
+<span class="cm">    prevSlide: index of the slide being switched from</span>
+<span class="cm">    reverse: boolean indicating whether direction from prevSlide to curSlide is reverse or not</span>
+<span class="cm">    */</span>
+    <span class="kd">var</span> <span class="nx">slide</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">billboard</span><span class="p">().</span><span class="nx">get</span><span class="p">(</span><span class="nx">curSlide</span><span class="p">);</span>
+
+    <span class="p">...</span>
+
+<span class="p">}</span>   
+</pre></div>
+
+<p>The available callbacks are:</p>
+
+<h2></h2>
+
+<h2></h2>
+
+<h2></h2>
+
+<h2>
+<a name="authors" class="anchor" href="#authors"><span class="octicon octicon-link"></span></a>Authors</h2>
+
+<p><a href="https://github.com/spalmer">Steve Palmer</a></p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/spalmer">spalmer</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
