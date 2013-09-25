@@ -1,62 +1,63 @@
-$(document).ready(function() {
+jQuery(document).ready(function($) {
+	
 
-	var
-		leftBillboard,
-		rightBillboard,
-		upBillboard,
-		downBillboard,
-		fadeBillboard,
-		gotoBillboard;
-		
-	leftBillboard = new $.billboard( 
-		".billboard.left", 
-		{ 
-			transition: 	"left"
-		});
-		
-	rightBillboard = new $.billboard(
-		".billboard.right", 
-		{ 
+	// default	
+	$("#billboard1")
+		.billboard();
+			
+	// transition to right with controls		
+	$("#billboard2")
+		.billboard({ 
 			transition:		"right", 
 			duration:			2000, 
 			speed: 				500, 
-			navType:			"controls"	
+			navType:			"controls",
+			autosize: 		false	
 		});
-		
-	upBillboard = new $.billboard(
-		".billboard.up", 
-		{ 
+	
+	// transition up with no navigation	
+	$("#billboard3")
+		.billboard({ 
 			transition:		"up", 
 			navType:			"none" 
 		});
-		
-	downBillboard	= new $.billboard(
-		".billboard.down", 
-		{ 
+	
+	// transition down with custom easing	
+	$("#billboard4")
+		.billboard({ 
 			ease:					"easeInOutElastic", 
 			speed:				2000, 
 			transition:		"down"
 		});
-	
-	fadeBillboard = new $.billboard(
-		".billboard.fade", 
-		{ 
+
+	// fade transition with no footer and resize to each slide's content
+	$("#billboard5")
+		.billboard({ 
 			transition:		"fade", 
 			includeFooter: false,
 			resize:				 true 
 		});
+	
+	// callback for slide change
+	$("#billboard6")
+		.billboard({
+			onSlideChange: slideChangeHandler
+		});
 		
-	gotoBillboard = new $.billboard(
-		".billboard.goto"
-	);
+	function slideChangeHandler( curSlide, prevSlide, reverse, args )
+	{
+		var slide = this.billboard().get(curSlide);
+		
+		// do stuff
+	}		
 
 	// controls for last billboard
 	$("nav.goto a")
 		.click(function(e) {
 			e.preventDefault();
 			
-			gotoBillboard
-				.goto( $("nav.goto a").index(this) );
+			$("#billboard6")
+				.billboard("goto", [ $("nav.goto a").index(this) ]);
 		
 		});
 		

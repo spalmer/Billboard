@@ -20,19 +20,20 @@
 		<h2>Default options</h2>
 
 <pre class="prettyprint lang-js">
-var myBillboard = new $.billboard( "#myBillboard", { 
- ease: "easeInOutExpo",		// animation ease of transitions
- speed: 1000,			// duration of transitions in milliseconds
- duration: 5000,		// time between slide changes
- autoplay: true,		// whether slideshow should play automatically
- loop: true,			// whether slideshow should loop (only applies if autoplay is true)
- transition: "left", 		// "fade", "up", "down", "left", "right"
- navType: "list", 		// "controls", "list", "both" or "none"
- styleNav: true,		// applies default styles to nav
- includeFooter: true,		// show/hide footer (contains caption and nav)
- autosize: true,		// attempts to detect slideshow size automatically	
- resize: false			// attempts to detect each slide's size automatically	
-});</pre>
+$("#myBillboard")
+ .billboard({ 
+  ease: "easeInOutExpo",	// animation ease of transitions
+  speed: 1000,			// duration of transitions in milliseconds
+  duration: 5000,		// time between slide changes
+  autoplay: true,		// whether slideshow should play automatically
+  loop: true,			// whether slideshow should loop (only applies if autoplay is true)
+  transition: "left", 		// "fade", "up", "down", "left", "right"
+  navType: "list", 		// "controls", "list", "both" or "none"
+  styleNav: true,		// applies default styles to nav
+  includeFooter: true,		// show/hide footer (contains caption and nav)
+  autosize: true,		// attempts to detect slideshow size automatically	
+  resize: false			// attempts to detect each slide's size automatically	
+ });</pre>
 
 		<h2>The markup</h2>
 		
@@ -48,12 +49,11 @@ var myBillboard = new $.billboard( "#myBillboard", {
 		
 		<h2>Sample billboards</h2>
 		
-<pre class="prettyprint lang-js">var leftBillboard = new $.billboard( ".billboard.left", { 
-  transition: "left"
-});</pre>
+<pre class="prettyprint lang-js">$("#billboard1")
+ .billboard();</pre>
 		
 		<section style="width: 600px; height: 300px;">
-			<div class="billboard left">
+			<div id="billboard1">
 				<ul>
 					<li title="Title of first slide"><img src="http://lorempixel.com/600/400/sports" /></li>
 					<li title="Title of second slide"><img src="images/photo2.jpg" /></li>
@@ -63,15 +63,17 @@ var myBillboard = new $.billboard( "#myBillboard", {
 			</div>
 		</section>
 		
-<pre class="prettyprint lang-js">var rightBillboard = new $.billboard( ".billboard.right", { 
+<pre class="prettyprint lang-js">$("#billboard2")
+ .billboard({ 
   transition: "right", 
   duration: 2000, 
   speed: 500, 
-  navType: "controls"	
-});</pre>
+  navType: "controls",
+  autosize: false	
+ });</pre>
 
 		<section style="width: 50%;">
-			<div class="billboard right">
+			<div id="billboard2">
 				<ul>
 					<li title="Title of first slide"><a href="#1"><img src="http://lorempixel.com/600/400/sports" /></a></li>
 					<li title="Title of second slide"><a href="#2"><img src="images/photo2.jpg" /></a></li>
@@ -81,12 +83,13 @@ var myBillboard = new $.billboard( "#myBillboard", {
 			</div>
 		</section>
 		
-<pre class="prettyprint lang-js">var upBillboard = new $.billboard( ".billboard.up", { 
+<pre class="prettyprint lang-js">$("#billboard3")
+ .billboard({ 
   transition: "up", 
   navType: "none" 
-});</pre>
+ });</pre>
 
-		<div class="billboard up">
+		<div id="billboard3">
 			<ul>
 				<li title="Title of first slide"><a href="#1"><img src="images/photo1.jpg" /></a></li>
 				<li title="Title of second slide"><a href="#2"><img src="images/photo2.jpg" /></a></li>
@@ -95,13 +98,14 @@ var myBillboard = new $.billboard( "#myBillboard", {
 			</ul>
 		</div>
 
-<pre class="prettyprint lang-js">var downBillboard = new $.billboard( ".billboard.down", { 
+<pre class="prettyprint lang-js">$("#billboard4")
+ .billboard({ 
   ease: "easeInOutElastic", 
   speed: 2000, 
   transition: "down"
-});</pre>
+ });</pre>
 
-		<div class="billboard down">
+		<div id="billboard4">
 			<ul>
 				<li title="Title of first slide"><a href="#1"><img src="images/photo1.jpg" /></a></li>
 				<li title="Title of second slide"><a href="#2"><img src="images/photo2.jpg" /></a></li>
@@ -110,14 +114,14 @@ var myBillboard = new $.billboard( "#myBillboard", {
 			</ul>
 		</div>
 
-<pre class="prettyprint lang-js">var fadeBillboard = new $.billboard( ".billboard.fade", 
-{ 
+<pre class="prettyprint lang-js">$("#billboard5")
+ .billboard({ 
   transition: "fade", 
   includeFooter: false,
   resize: true 
-});</pre>
+ });</pre>
 
-		<div class="billboard fade">
+		<div id="billboard5">
 			<ul>
 				<li title="Title of first slide"><a href="#1"><img src="images/photo1.jpg" /></a></li>
 				<li title="Title of second slide"><a href="#2"><img src="http://lorempixel.com/600/500/sports" /></a></li>
@@ -126,17 +130,27 @@ var myBillboard = new $.billboard( "#myBillboard", {
 			</ul>
 		</div>
 		
-<pre class="prettyprint lang-js">var gotoBillboard = new $.billboard( ".billboard.goto" );
+<pre class="prettyprint lang-js">$("#billboard6")
+ .billboard({
+  onSlideChange: slideChangeHandler
+ });
+ 
+ function slideChangeHandler( curSlide, prevSlide, reverse, args )
+ {
+  var slide = this.billboard().get(curSlide);
+  // do stuff
+ }	 
 
-$("nav.goto a")
+ $("nav.goto a")
   .click(function(e) {
-    e.preventDefault();
+   e.preventDefault();
 
-    gotoBillboard
-      .goto( $("nav.goto a").index(this) );
-  });</pre>
+   $("#billboard6")
+    .billboard()
+    .goto( $("nav.goto a").index(this) );
+ });</pre>
 
-		<div class="billboard goto">
+		<div id="billboard6">
 			<ul>
 				<li title="Title of first slide"><a href="#1"><img src="images/photo1.jpg" /></a></li>
 				<li title="Title of second slide"><a href="#2"><img src="images/photo2.jpg" /></a></li>

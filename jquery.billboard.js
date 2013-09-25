@@ -9,20 +9,40 @@
  *
  */
  
-// TO DO
-/*
-- have swiping factor in transition direction
-*/
- 
 ;(function($) {
 
-	$.billboard = function(el, options) {
+	/*
+	$.fn.billboard = function() {
+		return this.data("billboard") ? this.data("billboard") : this;
+	};
+	*/
+	
+	$.fn.billboard = function( options, args ) {
 	
 		var 
-			wrapper = $(el);
-		if( ! wrapper.length || wrapper.hasClass("billboard-activated") ) return;
+			wrapper = $(this);
+		
+		// selector is empty
+		if( ! wrapper.length ) 
+		{
+			return;
+		}
+		
+		// element has already billboard'd
+		if( wrapper.data("billboard") )
+		{
+			// check if it's a method being called
+			if( typeof options == "string" && typeof wrapper.data("billboard")[options] == "function" )
+			{
+				wrapper.data("billboard")[options].apply(this, args);
+			}
+			
+			return wrapper.data("billboard");
+		}
+		
 		wrapper
-			.addClass("billboard");
+			.addClass("billboard")
+			.data("billboard", this);
 			
 		// default options
 		var defaults = {
@@ -82,7 +102,7 @@
 		var 
 			btnNext 				= $('<a href="#" class="control next" title="Next">Next</a>'),
 			btnPrev 				= $('<a href="#" class="control prev" title="Previous">Previous</a>'),
-			btnPause	 			= $('<a href="#" class="control play pause"></a>');
+			btnPause	 			= $('<a href="#" class="control play pause" title="Pause">Pause</a>');
 		
 
 		/*************************************
@@ -92,7 +112,6 @@
 		var _init = function() 
 		{
 			plugin.settings = $.extend({}, defaults, options);
-			plugin.el = el;
 	
 			// single slide
 			if( numSlides <= 1 ) 
@@ -588,7 +607,9 @@
 				_playNextSlide();
 				
 				btnPause
-					.addClass("pause");
+					.addClass("pause")
+					.text("Pause")
+					.attr("title", "Pause");
 				
 				plugin
 					.settings
@@ -643,11 +664,6 @@
 					( curSlide == prevSlide && curSlide == 0 ) 
 				);
 			}
-			
-			// play/pause button
-			btnPause
-				.text("Pause")
-				.attr("title", "Pause");
 			
 			// slide change callback
 			plugin
@@ -794,6 +810,7 @@
 		
   	// constructor	
   	_init();	
+
 	}
   
 })( jQuery );
