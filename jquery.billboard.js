@@ -68,7 +68,7 @@
 			y_start 		= 0,
 			y_end 			= 0,	
 			title,
-			loadDelay 	= 200;
+			startDelay 	= 200;
 		
 		// extra elements
 		var 
@@ -102,6 +102,9 @@
 				_setSize();
 				return;
 			}
+			
+			slides
+				.css("visibility", "hidden");
 			
 			wrapper
 				.on("slideLoaded", function(e, $slide) {
@@ -142,10 +145,10 @@
 
 				})
 				.on("swipeleft", function() {
-					_playNextSlide();
+					_playPrevSlide();
 				})
 				.on("swiperight", function() {
-					_playPrevSlide();
+					_playNextSlide();
 				});
 			
 			// start it up
@@ -238,8 +241,12 @@
 			}
 
 			// load first slide
-			_play();				
-
+			setTimeout(function() {
+				slides
+					.css("visibility", "visible");
+				_play();
+			}, startDelay);
+			
 			// init callback
 			plugin
 				.settings
@@ -289,12 +296,6 @@
 			ratioDiv
 				.appendTo(wrapper);
 				
-			// hide all slides
-			/*
-			$("> ul > li", wrapper)
-				.hide();
-			*/
-			
 			// pause button behaviours
 			$(nav_pause)
 				.click(function(e) 
@@ -635,9 +636,9 @@
 			}
 			else if ( slides.eq(curSlide).data("aspectRatio") )
 			{
-				wrapperAspectRatio = wrapper.width() / wrapper.height();
-				slideAspectRatio = slides.eq(curSlide).data("aspectRatio");
-				
+				wrapperAspectRatio = Math.floor( wrapper.width() / wrapper.height() * 1000 )  / 1000;
+				slideAspectRatio = Math.floor( slides.eq(curSlide).data("aspectRatio") * 1000 )  / 1000;
+
 				wrapper
 					.removeClass("billboard-portrait billboard-landscape")
 					.addClass( wrapperAspectRatio > slideAspectRatio ? "billboard-portrait" : "billboard-landscape" );

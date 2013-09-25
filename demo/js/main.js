@@ -35,9 +35,9 @@ $(document).ready(function() {
 		{ 
 			ease:					"easeInOutElastic", 
 			speed:				2000, 
-			transition:		"down" 
+			transition:		"down"
 		});
-		
+	
 	fadeBillboard = new $.billboard(
 		".billboard.fade", 
 		{ 
