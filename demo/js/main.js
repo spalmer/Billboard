@@ -25,7 +25,7 @@ jQuery(document).ready(function($) {
 	// transition down with custom easing	
 	$("#billboard4")
 		.billboard({ 
-			ease:					"easeInOutElastic", 
+			easing:				"easeInOutElastic", 
 			speed:				2000, 
 			transition:		"down"
 		});
