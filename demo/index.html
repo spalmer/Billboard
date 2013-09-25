@@ -2,7 +2,7 @@
 <html class="no-js">
 	<head>
 		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
 		<title>jQuery Billboard</title>
 
 		<meta name="viewport" content="width=device-width">
@@ -20,9 +20,7 @@
 		<h2>Default options</h2>
 
 <pre class="prettyprint lang-js">
-var myBillboard = new $.billboard(
-"#myBillboard",
-{ 
+var myBillboard = new $.billboard( "#myBillboard", { 
  ease: "easeInOutExpo",		// animation ease of transitions
  speed: 1000,			// duration of transitions in milliseconds
  duration: 5000,		// time between slide changes
@@ -50,7 +48,9 @@ var myBillboard = new $.billboard(
 		
 		<h2>Sample billboards</h2>
 		
-<pre class="prettyprint lang-js">$(".billboard.left").billboard();</pre>
+<pre class="prettyprint lang-js">var leftBillboard = new $.billboard( ".billboard.left", { 
+  transition: "left"
+});</pre>
 		
 		<section style="width: 600px; height: 300px;">
 			<div class="billboard left">
@@ -63,11 +63,11 @@ var myBillboard = new $.billboard(
 			</div>
 		</section>
 		
-<pre class="prettyprint lang-js">$(".billboard.right").billboard({ 
-	transition: "right", 
-	duration: 2000,
-	speed: 500,
-	navType: "controls"
+<pre class="prettyprint lang-js">var rightBillboard = new $.billboard( ".billboard.right", { 
+  transition: "right", 
+  duration: 2000, 
+  speed: 500, 
+  navType: "controls"	
 });</pre>
 
 		<section style="width: 50%;">
@@ -81,9 +81,9 @@ var myBillboard = new $.billboard(
 			</div>
 		</section>
 		
-<pre class="prettyprint lang-js">$(".billboard.up").billboard({ 
-	transition: "up", 
-	navType: "none"
+<pre class="prettyprint lang-js">var upBillboard = new $.billboard( ".billboard.up", { 
+  transition: "up", 
+  navType: "none" 
 });</pre>
 
 		<div class="billboard up">
@@ -95,10 +95,10 @@ var myBillboard = new $.billboard(
 			</ul>
 		</div>
 
-<pre class="prettyprint lang-js">$(".billboard.up").billboard({ 
-	ease: "easeInOutElastic",
-	speed: 2000,
-	transition: "down"
+<pre class="prettyprint lang-js">var downBillboard = new $.billboard( ".billboard.down", { 
+  ease: "easeInOutElastic", 
+  speed: 2000, 
+  transition: "down"
 });</pre>
 
 		<div class="billboard down">
@@ -110,26 +110,31 @@ var myBillboard = new $.billboard(
 			</ul>
 		</div>
 
-<pre class="prettyprint lang-js">$(".billboard.fade").billboard({ 
-	transition: "fade",
-	includeFooter: false,
-	resize: true
+<pre class="prettyprint lang-js">var fadeBillboard = new $.billboard( ".billboard.fade", 
+{ 
+  transition: "fade", 
+  includeFooter: false,
+  resize: true 
 });</pre>
 
 		<div class="billboard fade">
 			<ul>
 				<li title="Title of first slide"><a href="#1"><img src="images/photo1.jpg" /></a></li>
-				<li title="Title of second slide"><a href="#2"><img src="http://lorempixel.com/200/400/sports" /></a></li>
+				<li title="Title of second slide"><a href="#2"><img src="http://lorempixel.com/600/500/sports" /></a></li>
 				<li><a href="#3"><img src="images/photo3.jpg" /></a></li>
 				<li><a href="#4"><img src="images/photo4.jpg" /></a></li>
 			</ul>
 		</div>
 		
-<pre class="prettyprint lang-js">$(".billboard.goto").billboard();
-$("nav.goto a").click(function(e) {
-	e.preventDefault();
-	$.fn.billboard.goto($("nav.goto a").index(this));
-});</pre>
+<pre class="prettyprint lang-js">var gotoBillboard = new $.billboard( ".billboard.goto" );
+
+$("nav.goto a")
+  .click(function(e) {
+    e.preventDefault();
+
+    gotoBillboard
+      .goto( $("nav.goto a").index(this) );
+  });</pre>
 
 		<div class="billboard goto">
 			<ul>

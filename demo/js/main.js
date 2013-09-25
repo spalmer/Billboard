@@ -46,7 +46,7 @@ $(document).ready(function() {
 			resize:				 true 
 		});
 		
-	gotoBillboard 		= new $.billboard(
+	gotoBillboard = new $.billboard(
 		".billboard.goto"
 	);
 

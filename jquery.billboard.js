@@ -36,7 +36,7 @@
 			
 			styleNav: 				true,			// applies default styles to nav
 			includeFooter: 		true,			// show/hide footer (contains caption and nav)
-			autosize:					true,		// attempts to detect slideshow size automatically
+			autosize:					true,			// attempts to detect slideshow size automatically
 			resize: 					false,		// resize container based on each slide's width/height (used with autosize:true) 	
 			
 			onSlideChange:		function(){},
@@ -80,9 +80,9 @@
 
 		// control elements
 		var 
-			nav_next 				= $('<a href="#" class="control next" title="Next">Next</a>'),
-			nav_prev 				= $('<a href="#" class="control prev" title="Previous">Previous</a>'),
-			nav_pause 			= $('<a href="#" class="control play pause" title="Pause/Play">Pause/Play</a>');
+			btnNext 				= $('<a href="#" class="control next" title="Next">Next</a>'),
+			btnPrev 				= $('<a href="#" class="control prev" title="Previous">Previous</a>'),
+			btnPause	 			= $('<a href="#" class="control play pause"></a>');
 		
 
 		/*************************************
@@ -145,11 +145,29 @@
 
 				})
 				.on("swipeleft", function() {
-					_playPrevSlide();
+					if( plugin.settings.transition == "left" )
+						_playNextSlide();
+					if( plugin.settings.transition == "right" )
+						_playPrevSlide();
 				})
 				.on("swiperight", function() {
-					_playNextSlide();
-				});
+					if( plugin.settings.transition == "left" )
+						_playPrevSlide();
+					if( plugin.settings.transition == "right" )
+						_playNextSlide();
+				})
+				.on("swipeup", function() {
+					if( plugin.settings.transition == "up" )
+						_playNextSlide();
+					if( plugin.settings.transition == "down" )
+						_playPrevSlide();				
+				})
+				.on("swipedown", function() {
+					if( plugin.settings.transition == "up" )
+						_playPrevSlide();
+					if( plugin.settings.transition == "down" )
+						_playNextSlide();				
+				});				
 			
 			// start it up
 			_buildInterface();
@@ -297,49 +315,41 @@
 				.appendTo(wrapper);
 				
 			// pause button behaviours
-			$(nav_pause)
+			btnPause
 				.click(function(e) 
 				{
 					e.preventDefault();
-					
-					if(paused)
-					{
-						_playNextSlide();
-						if(plugin.settings.autoplay) interval = setInterval(_playNextSlide, plugin.settings.duration);
-						paused = false;
-						$(this)
-							.addClass("pause");
-						plugin.settings.onClickPlay.apply(wrapper, [curSlide, prevSlide, arguments]);
-					} else 
-					{
-						if(plugin.settings.autoplay) clearInterval(interval);
-						paused = true;
-						$(this)
-							.removeClass("pause");
-						plugin.settings.onClickPause.apply(wrapper, [curSlide, prevSlide, arguments]);
-					}
+					_pause();
 				});
 			
 			// next button behaviours	
-			$(nav_next)
+			btnNext
 				.click(function(e) 
 				{
 					e.preventDefault();
 
 					_reset();
 					_playNextSlide();
-					plugin.settings.onClickPrev.apply(wrapper, [curSlide, prevSlide, arguments]);
+
+					plugin
+						.settings
+						.onClickPrev
+						.apply(wrapper, [curSlide, prevSlide, arguments]);
 				});
 				
 			// prev button behaviours	
-			$(nav_prev)
+			btnPrev
 				.click(function(e) 
 				{
 					e.preventDefault();
 
 					_reset();
 					_playPrevSlide();
-					plugin.settings.onClickNext.apply(wrapper, [curSlide, prevSlide, arguments]);
+
+					plugin
+						.settings
+						.onClickNext
+						.apply(wrapper, [curSlide, prevSlide, arguments]);
 				});
 					
 		}
@@ -365,36 +375,6 @@
 				}
 			}
 					
-/*		
-			if( ! firstRun) loadDelay = 0;
-			firstRun = false;
-			
-			// rewrite this to calculate the aspect ratio for each slide
-			// by counting all the images and checking the slide width/height when they're all loaded
-			// if resize is true, change size every slide
-			// if resize is false, set size based on first slide
-			
-			if(plugin.settings.autosize) 
-			{
-				setTimeout(function(){ 
-					wrapper
-						.animate(
-							{ width: _getSlide(curSlide).width() },
-							{ duration: "fast" }
-						); 
-				}, loadDelay);
-
-				setTimeout(function(){ 
-					wrapper
-						.animate(
-							{ height: _getSlide(curSlide).height() },
-							{ duration: "fast" }
-						); 
-				}, loadDelay);
-			
-			}
-			
-*/			
 		}
 		
 		var _calculateSlideSize = function( $slide )
@@ -459,13 +439,10 @@
 		{
 			// prev/pause/next
 			controlsNav
-				.appendTo(footer);
-			nav_prev
-				.appendTo(controlsNav);	
-			nav_pause
-				.appendTo(controlsNav);
-			nav_next
-				.appendTo(controlsNav);
+				.appendTo(footer)
+				.append(btnPrev)
+				.append(btnPause)
+				.append(btnNext);
 		}
 		
 		var _addNavList = function() 
@@ -489,10 +466,20 @@
 						
 							prevSlide = curSlide;
 							curSlide = parseInt($(this).attr("rel"));
-							if(prevSlide == curSlide) return;
+
+							if( prevSlide == curSlide ) 
+							{	
+								return;
+							}
+							
 							_reset();
 							_play();
-							plugin.settings.onClickDotNav.apply(wrapper, [curSlide, prevSlide, arguments]);
+							
+							plugin
+								.settings
+								.onClickDotNav
+								.apply(wrapper, [curSlide, prevSlide, arguments]);
+								
 						})
 						.appendTo(listNav);
 				});
@@ -501,7 +488,7 @@
 		// reset autoplay
 		var _reset = function()
 		{
-			if(plugin.settings.autoplay && ! paused) 
+			if( plugin.settings.autoplay && ! paused ) 
 			{
 				clearInterval(interval);
 				interval = setInterval(_playNextSlide, plugin.settings.duration);
@@ -511,22 +498,30 @@
 		// go to next slide
 		var _playNextSlide = function() 
 		{
-			if(plugin.settings.navType != "list") reverse = false;
+			if( plugin.settings.navType != "list" ) 
+			{
+				reverse = false;
+			}
 			
 			prevSlide = curSlide;
 			curSlide == ( numSlides - 1 ) ? curSlide = 0 : curSlide++;
-			if( plugin.settings.autoplay && curSlide == 0 && ! plugin.settings.loop) 
+			
+			if( plugin.settings.autoplay && curSlide == 0 && ! plugin.settings.loop ) 
 			{
 				clearInterval(interval);
 				return; 
 			}
+			
 			_play();	
 		}
 		
 		// go to prev slide
 		var _playPrevSlide = function() 
 		{
-			if(plugin.settings.navType != "list") reverse = true;
+			if(plugin.settings.navType != "list") 
+			{	
+				reverse = true;
+			}
 			
 			prevSlide = curSlide;
 			curSlide == 0 ? curSlide = ( numSlides - 1 ) : curSlide--;
@@ -539,7 +534,11 @@
 			_reset();
 			if( $index >= 0 && $index < numSlides && $index != curSlide ) 
 			{
-				if( plugin.settings.navType != "list" ) reverse = $index < curSlide;
+				if( plugin.settings.navType != "list" ) 
+				{
+					reverse = $index < curSlide;
+				}
+				
 				prevSlide = curSlide;
 				curSlide = $index;
 				_play();
@@ -550,7 +549,8 @@
 		var _getSlide = function( $index )
 		{
 			$index += 1; // 1-based indexing
-			if( $index > numSlides ) return;
+			if( $index > numSlides ) 
+				return;
 			
 			var 
 				slide = $("> ul > li:nth-child(" + $index + ") > img", wrapper).length ? $("> ul > li:nth-child(" + $index + ") > img", wrapper) : $("> ul > li:nth-child(" + $index + ")", wrapper);
@@ -560,23 +560,51 @@
 		
 		// pause
 		var _pause = function() {
-			if( ! paused) 
+			if( ! paused ) 
 			{
-				if(plugin.settings.autoplay) clearInterval(interval);
 				paused = true;	
-				$(nav_pause)
-					.removeClass("pause");
+				
+				if(plugin.settings.autoplay) 
+				{	
+					clearInterval(interval);
+				}
+				
+				btnPause
+					.removeClass("pause")
+					.text("Play")
+					.attr("title", "Play");
+				
+				plugin
+					.settings
+					.onClickPause
+					.apply(wrapper, [curSlide, prevSlide, arguments]);	
+			
+			}
+			else
+			{
+				paused = false;
+				
+				_reset();
+				_playNextSlide();
+				
+				btnPause
+					.addClass("pause");
+				
+				plugin
+					.settings
+					.onClickPlay
+					.apply(wrapper, [curSlide, prevSlide, arguments]);			
 			}
 		}
 		
 		// resume
 		var _resume = function() 
 		{
-			if(paused) 
+			if( paused ) 
 			{
 				_reset();
 				paused = false;
-				$(nav_pause)
+				btnPause
 					.addClass("pause");
 			}
 		}	
@@ -584,13 +612,19 @@
 		// sleep
 		var _sleep = function()
 		{
-			if( plugin.settings.autoplay ) clearInterval(interval);
+			if( plugin.settings.autoplay ) 
+			{
+				clearInterval(interval);
+			}
 		}
 		
 		// wake
 		var _wake = function()
 		{
-			if( ! paused ) _reset();
+			if( ! paused ) 
+			{
+				_reset();
+			}
 		}
 		
 		// go to curSlide
@@ -610,21 +644,20 @@
 				);
 			}
 			
+			// play/pause button
+			btnPause
+				.text("Pause")
+				.attr("title", "Pause");
+			
 			// slide change callback
 			plugin
 				.settings
 				.onSlideChange
 				.apply(wrapper, [curSlide, prevSlide, reverse, arguments]);				
 
+			// handle size changes
 			if( plugin.settings.resize ) 
 			{
-				/*
-				wrapper
-					.animate(
-						{ width: slides.eq(curSlide).data("slideWidth"), height: slides.eq(curSlide).data("slideHeight") },
-						{ duration: plugin.settings.speed }
-					);
-				*/
 				ratioDiv
 					.animate(
 						{ paddingTop: ( 1 / slides.eq(curSlide).data("aspectRatio") * 100 ) + "%" },
@@ -638,11 +671,10 @@
 			{
 				wrapperAspectRatio = Math.floor( wrapper.width() / wrapper.height() * 1000 )  / 1000;
 				slideAspectRatio = Math.floor( slides.eq(curSlide).data("aspectRatio") * 1000 )  / 1000;
-
+				
 				wrapper
 					.removeClass("billboard-portrait billboard-landscape")
 					.addClass( wrapperAspectRatio > slideAspectRatio ? "billboard-portrait" : "billboard-landscape" );
-				
 			}
 			
 			// animate slides
@@ -654,7 +686,7 @@
 						title = $(this).attr("title");
 						$(".billboard-caption", wrapper)
 							.fadeOut(plugin.settings.speed * 0.5, function(){
-								if(title) 
+								if( title ) 
 								{
 									$(this)
 										.text(title)
@@ -665,13 +697,15 @@
 					// advance slide
 					switch( plugin.settings.transition ) {
 						case "fade":
-							if( thisSlide == curSlide ) {
+							if( thisSlide == curSlide ) 
+							{
 								$(this)
 									.animate(
 										{ opacity: "show" },
 										{ duration: plugin.settings.speed }
 									);
-							} else 
+							} 
+							else 
 							{
 								$(this)
 									.animate(
@@ -682,18 +716,18 @@
 							break;
 						case "left":
 						case "right":
-							if( thisSlide == curSlide || thisSlide == prevSlide ) {
+							if( thisSlide == curSlide || thisSlide == prevSlide ) 
+							{
 								x_start = ( thisSlide == curSlide ) ? 100 * (reverse ? -1 : 1) : 0;
 								x_end = ( thisSlide == curSlide ) ? 0 : -100 * (reverse ? -1 : 1);
-								if(plugin.settings.transition == "right") {
+								if( plugin.settings.transition == "right") 
+								{
 									x_start *= -1;
 									x_end *= -1;
 								}
 								$(this)
-									.css("left", x_start + "%");
-								$(this)
-									.css("z-index", ( thisSlide == curSlide ? numSlides + 100 : 1 ));
-								$(this)
+									.css("left", x_start + "%")
+									.css("z-index", ( thisSlide == curSlide ? numSlides + 100 : 1 ))
 									.animate(
 										{ "left": x_end + "%" }, 
 										{
@@ -701,8 +735,7 @@
 											easing: plugin.settings.easing,
 											queue: false
 										}
-									);
-								$(this)
+									)
 									.show();
 							} else 
 							{
@@ -712,18 +745,18 @@
 							break;
 						case "up":
 						case "down":
-							if( thisSlide == curSlide || thisSlide == prevSlide ) {
+							if( thisSlide == curSlide || thisSlide == prevSlide ) 
+							{
 								y_start = (thisSlide == curSlide) ? 100 * (reverse ? -1 : 1) : 0;
 								y_end = (thisSlide == curSlide) ? 0 : -100 * (reverse ? -1 : 1);
-								if(plugin.settings.transition == "down") {
+								if( plugin.settings.transition == "down" ) 
+								{
 									y_start *= -1;
 									y_end *= -1;
 								}
 								$(this)
-									.css("top", y_start + "%");
-								$(this)
-									.css("z-index", (thisSlide == curSlide ? numSlides+100 : 1));
-								$(this)
+									.css("top", y_start + "%")
+									.css("z-index", (thisSlide == curSlide ? numSlides+100 : 1))
 									.animate(
 										{ "top": y_end + "%" }, 
 										{
@@ -731,8 +764,7 @@
 											easing: plugin.settings.easing,
 											queue: false
 										}
-									);
-								$(this)
+									)
 									.show();
 							} else 
 							{
@@ -748,19 +780,20 @@
 					{
 						$("a[rel=" + thisSlide + "]", listNav)
 							.addClass("active");
-					} else 
+					} 
+					else 
 					{
 						$("a[rel=" + thisSlide + "]", listNav)
 							.removeClass("active");			
 					}
 				}
+				
 			});
 			_reset();
 		}		
 		
   	// constructor	
-  	_init();
-		
+  	_init();	
 	}
   
 })( jQuery );
