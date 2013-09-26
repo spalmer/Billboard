@@ -1,5 +1,5 @@
 /**
- * jQuery Billboard v1.1
+ * jQuery Billboard v1.2
  *
  * Terms of Use - jQuery Billboard
  * under the MIT (http://www.opensource.org/licenses/mit-license.php) License.
@@ -8,6 +8,14 @@
  * (https://github.com/spalmer/Billboard)
  *
  */
+ 
+/*
+
+TO DO
+
+- post examples online
+
+*/ 
  
 ;(function($) {
 
