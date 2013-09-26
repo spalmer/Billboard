@@ -9,14 +9,6 @@
  *
  */
  
-/*
-
-TO DO
-
-- post examples online
-
-*/ 
- 
 ;(function($) {
 
 	$.fn.billboard = function( options, args ) {
