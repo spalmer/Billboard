@@ -11,7 +11,7 @@ jQuery(document).ready(function($) {
 			transition:		"right", 
 			duration:			2000, 
 			speed: 				500, 
-			navType:			"controls",
+			//navType:			"controls",
 			autosize: 		false	
 		});
 	
@@ -19,7 +19,8 @@ jQuery(document).ready(function($) {
 	$("#billboard3")
 		.billboard({ 
 			transition:		"up", 
-			navType:			"none" 
+			navType:			"none",
+			stretch:			false 
 		});
 	
 	// transition down with custom easing	
@@ -46,9 +47,10 @@ jQuery(document).ready(function($) {
 		
 	function slideChangeHandler( curSlide, prevSlide, reverse, args )
 	{
-		var slide = this.billboard().get(curSlide);
-		
-		// do stuff
+		var 
+			slide = this.billboard().get(curSlide);
+
+		// do something
 	}		
 
 	// controls for last billboard
