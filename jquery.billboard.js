@@ -19,12 +19,6 @@ TO DO
  
 ;(function($) {
 
-	/*
-	$.fn.billboard = function() {
-		return this.data("billboard") ? this.data("billboard") : this;
-	};
-	*/
-	
 	$.fn.billboard = function( options, args ) {
 	
 		var 
@@ -66,6 +60,7 @@ TO DO
 			includeFooter: 		true,			// show/hide footer (contains caption and nav)
 			autosize:					true,			// attempts to detect slideshow size automatically
 			resize: 					false,		// resize container based on each slide's width/height (used with autosize:true) 	
+			stretch:					true,			// stretch images to fill container
 			
 			onSlideChange:		function(){},
 			onClickDotNav:		function(){},
@@ -137,23 +132,11 @@ TO DO
 				.on("slideLoaded", function(e, $slide) {
 					numLoaded++;
 					
-					if( plugin.settings.resize ) 
+					if( numLoaded == numSlides )
 					{
-						if( numLoaded == numSlides )
-						{
-							// start
-							wrapper
-								.trigger("allSlidesLoaded");
-						}
-					}
-					else 
-					{
-						if( numLoaded )
-						{
-							// start
-							wrapper
-								.trigger("allSlidesLoaded");
-						}
+						// start
+						wrapper
+							.trigger("allSlidesLoaded");
 					}
 					
 				})
@@ -205,11 +188,6 @@ TO DO
 				.onInit
 				.apply(wrapper, arguments);
 				
-			if( ! plugin.settings.autosize )
-			{
-				_start();
-			}	
-				
 		}
 		
 		/*************************************
@@ -256,7 +234,9 @@ TO DO
 				.ready = true;
 					
 			wrapper
-				.addClass("billboard-activated " + ( plugin.settings.autosize ? "billboard-autosize" : "billboard-fixedsize"));
+				.addClass("billboard-activated")
+				.addClass( plugin.settings.autosize ? "billboard-autosize" : "billboard-fixedsize" )
+				.addClass( plugin.settings.stretch ? "billboard-stretch" : "" );
 
 			// add footer, caption and nav
 			if( plugin.settings.includeFooter ) 
@@ -384,24 +364,10 @@ TO DO
 		// set width/height to first slide dimensions
 		var _setSize = function() 
 		{
-			var
-				firstSlide = slides.eq(0);
-
-			if( plugin.settings.autosize ) 
-			{
-				if( plugin.settings.resize ) 
-				{
-					slides
-						.each(function() {
-							_calculateSlideSize( $(this) );
-						});
-				}
-				else 
-				{
-					_calculateSlideSize( firstSlide );
-				}
-			}
-					
+			slides
+				.each(function() {
+					_calculateSlideSize( $(this) );
+				});
 		}
 		
 		var _calculateSlideSize = function( $slide )
@@ -660,6 +626,7 @@ TO DO
 		var _play = function() 
 		{
 			var
+				slide = slides.eq(curSlide),
 				slideAspectRatio,
 				wrapperAspectRatio;
 		
@@ -678,25 +645,25 @@ TO DO
 				.settings
 				.onSlideChange
 				.apply(wrapper, [curSlide, prevSlide, reverse, arguments]);				
-
+				
 			// handle size changes
 			if( plugin.settings.resize ) 
 			{
 				ratioDiv
 					.animate(
-						{ paddingTop: ( 1 / slides.eq(curSlide).data("aspectRatio") * 100 ) + "%" },
+						{ paddingTop: ( 1 / slide.data("aspectRatio") * 100 ) + "%" },
 						{ 
 							duration: plugin.settings.speed,
 							easing: plugin.settings.easing
 						}
 					);
 			}
-			else if ( slides.eq(curSlide).data("aspectRatio") )
+			else if ( slide.data("aspectRatio") )
 			{
 				wrapperAspectRatio = Math.floor( wrapper.width() / wrapper.height() * 1000 )  / 1000;
-				slideAspectRatio = Math.floor( slides.eq(curSlide).data("aspectRatio") * 1000 )  / 1000;
+				slideAspectRatio = Math.floor( slide.data("aspectRatio") * 1000 )  / 1000;
 				
-				wrapper
+				slide
 					.removeClass("billboard-portrait billboard-landscape")
 					.addClass( wrapperAspectRatio > slideAspectRatio ? "billboard-portrait" : "billboard-landscape" );
 			}
