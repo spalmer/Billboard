@@ -12,6 +12,9 @@ Include the stylesheet in the `head` section of the document:
 
     <link rel="stylesheet" href="/path/to/jquery.billboard.css">
 
+## Examples
+
+Check out [some demos](http://spalmer.github.io/Billboard/demo)
 
 ## Usage
 
