@@ -22,7 +22,7 @@
 <pre class="prettyprint lang-js">
 $("#myBillboard")
  .billboard({ 
-  ease: "easeInOutExpo",	// animation ease of transitions
+  easing: "easeInOutExpo",	// animation ease of transitions
   speed: 1000,			// duration of transitions in milliseconds
   duration: 5000,		// time between slide changes
   autoplay: true,		// whether slideshow should play automatically
@@ -32,7 +32,8 @@ $("#myBillboard")
   styleNav: true,		// applies default styles to nav
   includeFooter: true,		// show/hide footer (contains caption and nav)
   autosize: true,		// attempts to detect slideshow size automatically	
-  resize: false			// attempts to detect each slide's size automatically	
+  resize: false,		// attempts to detect each slide's size automatically	
+  stretch: true			// stretch images to fill container
  });</pre>
 
 		<h2>The markup</h2>
@@ -52,13 +53,14 @@ $("#myBillboard")
 <pre class="prettyprint lang-js">$("#billboard1")
  .billboard();</pre>
 		
-		<section style="width: 600px; height: 300px;">
+		<section>
 			<div id="billboard1">
 				<ul>
-					<li title="Title of first slide"><img src="http://lorempixel.com/600/400/sports" /></li>
-					<li title="Title of second slide"><img src="images/photo2.jpg" /></li>
-					<li title="Title of third slide"><img src="http://lorempixel.com/600/150/sports" /></li>
-					<li title="Title of fourth slide"><img src="images/photo4.jpg" /></li>
+					<li title="Title of first slide"><a href="#1"><img src="http://lorempixel.com/600/400/sports" /></a></li>
+					<li title="Title of second slide"><a href="#2"><img src="images/photo2.jpg" /></a></li>
+					<li title="Title of third slide"><a href="#3"><img src="http://lorempixel.com/600/150/sports" /></a></li>
+					<li title="Title of fourth slide"><a href="#4"><img src="http://lorempixel.com/150/600/sports" /></a></li>
+					<li title="Title of fifth slide"><a href="#5"><img src="images/photo4.jpg" /></a></li>
 				</ul>
 			</div>
 		</section>
@@ -86,7 +88,8 @@ $("#myBillboard")
 <pre class="prettyprint lang-js">$("#billboard3")
  .billboard({ 
   transition: "up", 
-  navType: "none" 
+  navType: "none",
+  stretch: false
  });</pre>
 
 		<div id="billboard3">
@@ -100,7 +103,7 @@ $("#myBillboard")
 
 <pre class="prettyprint lang-js">$("#billboard4")
  .billboard({ 
-  ease: "easeInOutElastic", 
+  easing: "easeInOutElastic", 
   speed: 2000, 
   transition: "down"
  });</pre>

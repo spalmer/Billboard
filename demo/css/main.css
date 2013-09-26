@@ -20,5 +20,6 @@ nav {
 	clear: left;
 }	
 
-nav {
+#billboard3 {
+	max-height: 200px;
 }

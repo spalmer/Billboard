@@ -9,13 +9,16 @@
  *
  */
  
-;(function($) {
+/*
+TO DO 
 
-	/*
-	$.fn.billboard = function() {
-		return this.data("billboard") ? this.data("billboard") : this;
-	};
-	*/
+- transition right on demo isn't sized to first slide
+- stretching of images is funky… billboard3 and 4 in demo
+- http://jsfiddle.net/ddh2k/8/
+
+*/ 
+ 
+;(function($) {
 	
 	$.fn.billboard = function( options, args ) {
 	
