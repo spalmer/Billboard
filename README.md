@@ -38,7 +38,6 @@ var defaults = {
 	includeFooter: true, // show/hide footer (contains caption and nav)
 	autosize: true, // attempts to detect slideshow size automatically
 	resize: false, // resize container based on each slide's width/height (used with autosize:true) 	
-	stretch: true, // stretch images to fill container
 	
 	onSlideChange: function(){},
 	onClickDotNav: function(){},
