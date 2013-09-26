@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html class="no-js">
+	<head>
+		<meta charset="utf-8">
+
+		<title>jQuery Billboard</title>
+
+		<meta name="viewport" content="width=device-width">
+
+		<link rel="stylesheet" href="css/main.css">
+		<link rel="stylesheet" href="https://raw.github.com/spalmer/Billboard/master/jquery.billboard.css">
+
+		<!--[if lt IE 9]>
+			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+
+	</head>
+	<body>
+
+		<h2>Default options</h2>
+
+<pre class="prettyprint lang-js">
+$("#myBillboard")
+ .billboard({ 
+  ease: "easeInOutExpo",	// animation ease of transitions
+  speed: 1000,			// duration of transitions in milliseconds
+  duration: 5000,		// time between slide changes
+  autoplay: true,		// whether slideshow should play automatically
+  loop: true,			// whether slideshow should loop (only applies if autoplay is true)
+  transition: "left", 		// "fade", "up", "down", "left", "right"
+  navType: "list", 		// "controls", "list", "both" or "none"
+  styleNav: true,		// applies default styles to nav
+  includeFooter: true,		// show/hide footer (contains caption and nav)
+  autosize: true,		// attempts to detect slideshow size automatically	
+  resize: false,		// attempts to detect each slide's size automatically	
+  stretch: true			// stretch images to fill container
+ });</pre>
+
+		<h2>The markup</h2>
+		
+		<pre class="prettyprint lang-html">
+<div class="billboard">
+ <ul>
+  <li title="Title of first slide"><a href="#1"><img src="images/photo1.jpg" /></a></li>
+  <li title="Title of second slide"><a href="#2"><img src="images/photo2.jpg" /></a></li>
+  <li title="Title of third slide"><a href="#3"><img src="images/photo3.jpg" /></a></li>
+  <li title="Title of fourth slide"><a href="#4"><img src="images/photo4.jpg" /></a></li>
+ </ul>
+</div></pre>
+		
+		<h2>Sample billboards</h2>
+		
+<pre class="prettyprint lang-js">$("#billboard1")
+ .billboard();</pre>
+		
+		<section>
+			<div id="billboard1">
+				<ul>
+					<li title="Title of first slide"><a href="#1"><img src="http://lorempixel.com/600/400/sports" /></a></li>
+					<li title="Title of second slide"><a href="#2"><img src="images/photo2.jpg" /></a></li>
+					<li title="Title of third slide"><a href="#3"><img src="http://lorempixel.com/600/150/sports" /></a></li>
+					<li title="Title of fourth slide"><a href="#4"><img src="http://lorempixel.com/150/600/sports" /></a></li>
+					<li title="Title of fifth slide"><a href="#5"><img src="images/photo4.jpg" /></a></li>
+				</ul>
+			</div>
+		</section>
+		
+<pre class="prettyprint lang-js">$("#billboard2")
+ .billboard({ 
+  transition: "right", 
+  duration: 2000, 
+  speed: 500, 
+  navType: "controls",
+  autosize: false	
+ });</pre>
+
+		<section style="width: 50%;">
+			<div id="billboard2">
+				<ul>
+					<li title="Title of first slide"><a href="#1"><img src="http://lorempixel.com/600/400/sports" /></a></li>
+					<li title="Title of second slide"><a href="#2"><img src="images/photo2.jpg" /></a></li>
+					<li title="Title of third slide"><a href="#3"><img src="http://lorempixel.com/600/800/sports" /></a></li>
+					<li title="Title of fourth slide"><a href="#4"><img src="images/photo4.jpg" /></a></li>
+				</ul>
+			</div>
+		</section>
+		
+<pre class="prettyprint lang-js">$("#billboard3")
+ .billboard({ 
+  transition: "up", 
+  navType: "none",
+  stretch: false
+ });</pre>
+
+		<div id="billboard3">
+			<ul>
+				<li title="Title of first slide"><a href="#1"><img src="images/photo1.jpg" /></a></li>
+				<li title="Title of second slide"><a href="#2"><img src="images/photo2.jpg" /></a></li>
+				<li title="Title of third slide"><a href="#3"><img src="images/photo3.jpg" /></a></li>
+				<li title="Title of fourth slide"><a href="#4"><img src="images/photo4.jpg" /></a></li>
+			</ul>
+		</div>
+
+<pre class="prettyprint lang-js">$("#billboard4")
+ .billboard({ 
+  ease: "easeInOutElastic", 
+  speed: 2000, 
+  transition: "down"
+ });</pre>
+
+		<div id="billboard4">
+			<ul>
+				<li title="Title of first slide"><a href="#1"><img src="images/photo1.jpg" /></a></li>
+				<li title="Title of second slide"><a href="#2"><img src="images/photo2.jpg" /></a></li>
+				<li><a href="#3"><img src="images/photo3.jpg" /></a></li>
+				<li title="Title of fourth slide"><a href="#4"><img src="images/photo4.jpg" /></a></li>
+			</ul>
+		</div>
+
+<pre class="prettyprint lang-js">$("#billboard5")
+ .billboard({ 
+  transition: "fade", 
+  includeFooter: false,
+  resize: true 
+ });</pre>
+
+		<div id="billboard5">
+			<ul>
+				<li title="Title of first slide"><a href="#1"><img src="images/photo1.jpg" /></a></li>
+				<li title="Title of second slide"><a href="#2"><img src="http://lorempixel.com/600/500/sports" /></a></li>
+				<li><a href="#3"><img src="images/photo3.jpg" /></a></li>
+				<li><a href="#4"><img src="images/photo4.jpg" /></a></li>
+			</ul>
+		</div>
+		
+<pre class="prettyprint lang-js">$("#billboard6")
+ .billboard({
+  onSlideChange: slideChangeHandler
+ });
+ 
+ function slideChangeHandler( curSlide, prevSlide, reverse, args )
+ {
+  var slide = this.billboard().get(curSlide);
+  // do stuff
+ }	 
+
+ $("nav.goto a")
+  .click(function(e) {
+   e.preventDefault();
+
+   $("#billboard6")
+    .billboard()
+    .goto( $("nav.goto a").index(this) );
+ });</pre>
+
+		<div id="billboard6">
+			<ul>
+				<li title="Title of first slide"><a href="#1"><img src="images/photo1.jpg" /></a></li>
+				<li title="Title of second slide"><a href="#2"><img src="images/photo2.jpg" /></a></li>
+				<li title="Title of third slide"><a href="#3"><img src="images/photo3.jpg" /></a></li>
+				<li title="Title of fourth slide"><a href="#4"><img src="images/photo4.jpg" /></a></li>
+			</ul>
+		</div>
+				
+		<nav class="goto">
+			Go straight to:
+			<a href="#">1</a>
+			<a href="#">2</a>
+			<a href="#">3</a>
+			<a href="#">4</a>
+		</nav>		
+
+
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js" type="application/javascript"></script>
+		<script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.1.min.js"><\/script>')</script>
+		<script src="//google-code-prettify.googlecode.com/svn/loader/run_prettify.js" type="application/javascript"></script>		
+		<script src="js/vendor/jquery.easing.js" type="application/javascript"></script>
+		<script src="js/vendor/jquery.event.move.js" type="application/javascript"></script>
+		<script src="js/vendor/jquery.event.swipe.js" type="application/javascript"></script>
+
+		<script src="https://raw.github.com/spalmer/Billboard/master/jquery.billboard.js" type="application/javascript"></script>
+		<script src="js/main.js" type="application/javascript"></script>
+		
+	</body>
+</html>
