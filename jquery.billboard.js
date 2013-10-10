@@ -40,20 +40,24 @@
 			
 		// default options
 		var defaults = {
+		
+			// behaviour
 			easing: 					"easeInOutExpo",	// animation ease of transitions
 			speed: 						1000,			// duration of transitions in milliseconds
 			duration: 				5000,			// time between slide changes
 			autoplay: 				true,			// whether slideshow should play automatically
 			loop: 						true,			// whether slideshow should loop (only applies if autoplay is true)
 			transition: 			"left", 	// "fade", "up", "down", "left", "right"
+
+			// appearance
 			navType: 					"list", 	// "controls", "list", "both" or "none"
-			
 			styleNav: 				true,			// applies default styles to nav
 			includeFooter: 		true,			// show/hide footer (contains caption and nav)
 			autosize:					true,			// attempts to detect slideshow size automatically
 			resize: 					false,		// resize container based on each slide's width/height (used with autosize:true) 	
 			stretch:					true,			// stretch images to fill container
 			
+			// callbacks
 			onSlideChange:		function(){},
 			onClickDotNav:		function(){},
 			onClickNext: 			function(){},
@@ -82,8 +86,9 @@
 			x_end 			= 0,
 			y_start 		= 0,
 			y_end 			= 0,	
-			title,
-			startDelay 	= 200;
+			startDelay 	= 200,
+			slideTitle
+		;
 		
 		// extra elements
 		var 
@@ -437,13 +442,12 @@
 				.appendTo(footer);
 			
 			var 
-				item,
-				title;
+				item;
 				
 			$("> ul > li", wrapper)
 				.each(function(i) {
-					title = $(this).attr("title") != '' ? ' <span class="title">' + $(this).attr("title") + '</span>' : '';
-					item = $('<a href="#" class="dot" rel="' + i + '"><span class="index">' + (i+1) + '</span>' + title + '</a>');
+					slideTitle = $(this).attr("title") != '' ? ' <span class="title">' + $(this).attr("title") + '</span>' : '';
+					item = $('<a href="#" class="dot" rel="' + i + '"><span class="index">' + (i+1) + '</span>' + slideTitle + '</a>');
 					
 					item
 						.click(function(e) {	
@@ -666,13 +670,13 @@
 					// set caption
 					if( thisSlide == curSlide && plugin.settings.includeFooter ) 
 					{
-						title = $(this).attr("title");
+						slideTitle = $(this).attr("title");
 						$(".billboard-caption", wrapper)
 							.fadeOut(plugin.settings.speed * 0.5, function(){
-								if( title ) 
+								if( slideTitle ) 
 								{
 									$(this)
-										.text(title)
+										.text(slideTitle)
 										.fadeIn(plugin.settings.speed * 0.5);
 								}
 							});
