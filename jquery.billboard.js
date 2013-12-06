@@ -317,6 +317,11 @@
 			// aspect ratio
 			ratioDiv
 				.appendTo(wrapper);
+			slides
+				.each(function() {
+					$(this)	
+						.wrapInner( '<div class="billboard-slide"></div>' );
+				});			
 				
 			// pause button behaviours
 			btnPause
@@ -406,17 +411,19 @@
 		{
 			var
 				clone,
+				container,
 				aspectRatio;
 				
 			clone = $slide.clone();
 			clone
 				.appendTo("body")
+				.addClass("billboard-size-clone")
 				.css({ visibility: "hidden", position: "absolute" })
 				.each(function() {
-					aspectRatio = $(this).width() / $(this).height();			
+					aspectRatio = $(this).width() / $(this).height();	
 				})
 				.remove();
-			
+				
 			$slide
 				.data("aspectRatio", aspectRatio)
 				.data("slideWidth", $slide.outerWidth())

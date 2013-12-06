@@ -44,30 +44,45 @@
 	vertical-align: middle;
 }
 
-.billboard > ul > li > img,
-.billboard > ul > li > a > img {
+.billboard > ul > li > .billboard-slide,
+.billboard-size-clone > .billboard-slide {
   max-width: 100%;
   height: auto;
   max-height: 100%;
+  width: 100%;
   vertical-align: middle;
+  display: inline-block;
 }
 
-.billboard > ul > li > a {
+.billboard-size-clone {
 	display: inline-block;
 }
 
-.billboard.billboard-stretch > ul > li > img,
-.billboard.billboard-stretch > ul > li > a > img {
-  width: 100%;
+.billboard-size-clone > .billboard-slide {
+	float: left;
+	overflow: hidden;
 }
 
-.billboard.billboard-stretch > ul > li > a {
+.billboard-size-clone > .billboard-slide > img,
+.billboard-size-clone > .billboard-slide > a > img {
+  display: block;
+}
+
+
+.billboard.billboard-stretch > ul > li > .billboard-slide > img,
+.billboard.billboard-stretch > ul > li > .billboard-slide > a > img {
+  width: 100%;
+  display: block;
+}
+
+.billboard.billboard-stretch > ul > li > .billboard-slide > a {
 	width: 100%;
 	height: 100%;
 }
 
-.billboard.billboard-stretch > ul > li.billboard-portrait > img,
-.billboard.billboard-stretch > ul > li.billboard-portrait > a > img {
+.billboard.billboard-stretch > ul > li.billboard-portrait > .billboard-slide,
+.billboard.billboard-stretch > ul > li.billboard-portrait > .billboard-slide > img,
+.billboard.billboard-stretch > ul > li.billboard-portrait > .billboard-slide > a > img {
 	margin: 0 auto;
 	width: auto;
 	height: 100%;
