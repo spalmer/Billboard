@@ -134,7 +134,7 @@
 	margin: 0.15em;
 	text-indent: -9999px;
 	text-align: left;
-	border-radius: 0.35em;
+	border-radius: 50%;
 }
 
 .billboard .billboard-styled a.control {
