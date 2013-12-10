@@ -17,10 +17,18 @@
 	padding-top: 50%;
 }
 
+.billboard.billboard-fixedsize > .aspect-ratio {
+	display: none;
+}
+
 .billboard > ul {
 	list-style: none;
 	margin: 0;
 	padding: 0;
+	position: relative;
+}
+
+.billboard.billboard-autosize > ul {
 	position: absolute;
 	top: 0;
 	bottom: 0;
