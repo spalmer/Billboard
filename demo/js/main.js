@@ -62,7 +62,13 @@ jQuery(document).ready(function($) {
 				.billboard("goto", [ $("nav.goto a").index(this) ]);
 		
 		});
-		
+
+	// text billboard	
+	$("#billboard7")
+		.billboard({
+			resize: true
+		});
+				
 	// pretty printed code
 	$("pre.prettyprint")
 		.each(function() {

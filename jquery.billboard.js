@@ -179,6 +179,11 @@
 			// start it up
 			_buildInterface();
 			
+			$(window)
+				.on("resize", function() {
+					_windowResizeHandler();
+				});
+			
 			// init callback
 			plugin
 				.settings
@@ -362,6 +367,14 @@
 				});
 					
 		}
+		
+		var _windowResizeHandler = function() 
+		{
+			var
+				slide = slides.eq(curSlide);
+				
+			_updateBillboardSize( slide );			
+		}
 
 		// set width/height to first slide dimensions
 		var _setSize = function() 
@@ -376,9 +389,31 @@
 		{
 			var
 				images = $("img", $slide),
-				numImages = images.length;
+				numImages = images.length,
+				isPhoto = false,
+				parent = $slide.find(".billboard-slide").length ? $slide.find(".billboard-slide").first() : $slide,
+				children = parent.children(),
+				grandchildren = children.first().children();
+			
+			if ( children.length == 1 )
+			{
+				if ( children.first().prop("tagName") == "IMG" )
+				{
+					isPhoto = true;
+				}
+				else if ( 
+					grandchildren.length == 1 && 
+					grandchildren.first().prop("tagName") == "IMG" &&
+					children.first().text == ""
+				)
+				{
+					isPhoto = true;
+				}
+			}
 			
 			$slide
+				.data("isPhoto", isPhoto)
+				.data("numImages", numImages)
 				.data("imagesLoaded", 0);
 			
 			if( numImages > 0 )
@@ -418,7 +453,7 @@
 			clone
 				.appendTo("body")
 				.addClass("billboard-size-clone")
-				.css({ visibility: "hidden", position: "absolute" })
+				.css({ visibility: "hidden", position: "absolute", width: wrapper.width() })
 				.each(function() {
 					aspectRatio = $(this).width() / $(this).height();	
 				})
@@ -428,8 +463,44 @@
 				.data("aspectRatio", aspectRatio)
 				.data("slideWidth", $slide.outerWidth())
 				.data("slideHeight", $slide.outerHeight());
+				
 			wrapper
 				.trigger("slideLoaded", [ $slide ]);		
+		}
+		
+		var _updateBillboardSize = function( $slide )
+		{
+			var
+				slideAspectRatio,
+				wrapperAspectRatio;
+		
+			// handle size changes
+			if( plugin.settings.resize ) 
+			{
+				if( ! $slide.data("isPhoto") )
+				{
+					// not photo slide - do not obey old aspect ratio
+					_getSlideSize( $slide );
+				}
+				ratioDiv
+					.stop()
+					.animate(
+						{ paddingTop: ( 1 / $slide.data("aspectRatio") * 100 ) + "%" },
+						{ 
+							duration: plugin.settings.speed,
+							easing: plugin.settings.easing
+						}
+					);
+			}
+			else if ( $slide.data("aspectRatio") )
+			{
+				wrapperAspectRatio = Math.floor( wrapper.width() / wrapper.height() * 1000 )  / 1000;
+				slideAspectRatio = Math.floor( $slide.data("aspectRatio") * 1000 )  / 1000;
+				
+				$slide
+					.removeClass("billboard-portrait billboard-landscape")
+					.addClass( wrapperAspectRatio > slideAspectRatio ? "billboard-portrait" : "billboard-landscape" );
+			}
 		}
 		
 		var _addNavControls = function() 
@@ -629,9 +700,7 @@
 		var _play = function() 
 		{
 			var
-				slide = slides.eq(curSlide),
-				slideAspectRatio,
-				wrapperAspectRatio;
+				slide = slides.eq(curSlide);
 		
 			// determine animation direction
 			if( plugin.settings.navType == "list" ) 
@@ -649,27 +718,7 @@
 				.onSlideChange
 				.apply(wrapper, [curSlide, prevSlide, reverse, arguments]);				
 				
-			// handle size changes
-			if( plugin.settings.resize ) 
-			{
-				ratioDiv
-					.animate(
-						{ paddingTop: ( 1 / slide.data("aspectRatio") * 100 ) + "%" },
-						{ 
-							duration: plugin.settings.speed,
-							easing: plugin.settings.easing
-						}
-					);
-			}
-			else if ( slide.data("aspectRatio") )
-			{
-				wrapperAspectRatio = Math.floor( wrapper.width() / wrapper.height() * 1000 )  / 1000;
-				slideAspectRatio = Math.floor( slide.data("aspectRatio") * 1000 )  / 1000;
-				
-				slide
-					.removeClass("billboard-portrait billboard-landscape")
-					.addClass( wrapperAspectRatio > slideAspectRatio ? "billboard-portrait" : "billboard-landscape" );
-			}
+			_updateBillboardSize( slide );
 			
 			// animate slides
 			slides
