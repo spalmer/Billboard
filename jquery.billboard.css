@@ -84,6 +84,8 @@
 	overflow: hidden;
 }
 
+.billboard-size-clone > img,
+.billboard-size-clone > a > img,
 .billboard-size-clone > .billboard-slide > img,
 .billboard-size-clone > .billboard-slide > a > img {
 	width: 100%;
