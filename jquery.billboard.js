@@ -447,7 +447,9 @@
 			var
 				clone,
 				container,
-				aspectRatio;
+				aspectRatio,
+				slideWidth,
+				slideHeight;
 				
 			clone = $slide.clone();
 			clone
@@ -455,14 +457,16 @@
 				.addClass("billboard-size-clone")
 				.css({ visibility: "hidden", position: "absolute", width: wrapper.width() })
 				.each(function() {
-					aspectRatio = $(this).width() / $(this).height();	
+					slideWidth = $(this).outerWidth();
+					slideHeight = $(this).outerHeight();
+					aspectRatio = slideWidth / slideHeight;	
 				})
 				.remove();
 				
 			$slide
 				.data("aspectRatio", aspectRatio)
-				.data("slideWidth", $slide.outerWidth())
-				.data("slideHeight", $slide.outerHeight());
+				.data("slideWidth", slideWidth)
+				.data("slideHeight", slideHeight);
 				
 			wrapper
 				.trigger("slideLoaded", [ $slide ]);		
@@ -482,6 +486,7 @@
 					// not photo slide - do not obey old aspect ratio
 					_getSlideSize( $slide );
 				}
+
 				ratioDiv
 					.stop()
 					.animate(
