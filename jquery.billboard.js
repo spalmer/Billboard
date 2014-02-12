@@ -453,7 +453,7 @@
 				
 			clone = $slide.clone();
 			clone
-				.appendTo("body")
+				.appendTo(wrapper)
 				.addClass("billboard-size-clone")
 				.css({ visibility: "hidden", position: "absolute", width: wrapper.width() })
 				.each(function() {
